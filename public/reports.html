@@ -1,0 +1,176 @@
+<!-- ========================================================================= -->
+<!-- ส่วนควบคุมตัวกรอง (วันที่ / หน่วยงาน / แท็บดั้งเดิมตามภาพหน้าจอของคุณ) -->
+<!-- ========================================================================= -->
+<div style="background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px;">
+    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+        <label style="font-size: 14px; color: #4B5563; display: flex; flex-direction: column; gap: 5px;">
+            📅 เริ่มต้นวันที่
+            <input type="date" id="mainStartDate" style="padding: 8px; border: 1px solid #D1D5DB; border-radius: 6px;">
+        </label>
+        <label style="font-size: 14px; color: #4B5563; display: flex; flex-direction: column; gap: 5px;">
+            📅 ถึงวันที่
+            <input type="date" id="mainEndDate" style="padding: 8px; border: 1px solid #D1D5DB; border-radius: 6px;">
+        </label>
+        <label style="font-size: 14px; color: #4B5563; display: flex; flex-direction: column; gap: 5px;">
+            🏢 กรองตามหน่วยงาน (สำหรับรายงานเบิกจ่าย)
+            <select style="padding: 8px; border: 1px solid #D1D5DB; border-radius: 6px; min-width: 200px;">
+                <option>แสดงทั้งหมดทุกหน่วยงาน</option>
+            </select>
+        </label>
+    </div>
+
+    <!-- ปุ่มสลับกลุ่มรายงานดั้งเดิม + เพิ่มปุ่มระบบ AI คาดการณ์ -->
+    <div style="display: flex; gap: 5px; background: #F3F4F6; padding: 4px; border-radius: 8px; width: max-content;">
+        <button class="nav-tab active" onclick="filterReportGroup('all')" style="padding: 6px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">ทั้งหมด</button>
+        <button class="nav-tab" onclick="filterReportGroup('inbound')" style="padding: 6px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">รับเข้า</button>
+        <button class="nav-tab" onclick="filterReportGroup('withdraw')" style="padding: 6px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">เบิกจ่าย</button>
+        <button class="nav-tab" onclick="filterReportGroup('stock')" style="padding: 6px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">คงคลัง</button>
+        <button class="nav-tab" onclick="filterReportGroup('audit')" style="padding: 6px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">AUDIT</button>
+        <button class="nav-tab" onclick="filterReportGroup('ai')" style="padding: 6px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; background: #065F46; color: white;">🔮 AI วางแผนจัดซื้อ</button>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- โครงสร้างกล่องรายงาน (Dashboard Layout) -->
+<!-- ========================================================================= -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px;">
+
+    <!-- 🟦 1. รายงานการรับเข้าพัสดุ -->
+    <div class="report-card" data-group="inbound" style="background: white; padding: 20px; border-radius: 8px; border-top: 4px solid #1E40AF; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <h4 style="color: #1E40AF; margin-top: 0; margin-bottom: 5px;">🟦 รายงานการรับเข้าพัสดุ</h4>
+        <p style="font-size: 13px; color: #6B7280; margin-bottom: 15px;">สรุปข้อมูลรายการครุภัณฑ์และวัสดุพัสดุที่รับเข้าคลังสินค้าแยกตามมิติเวลา</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button onclick="downloadExcel('inbound-daily', true)" style="display: flex; justify-content: space-between; width: 100%; padding: 10px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; cursor: pointer;">
+                <span>📋 รายงานรับเข้า รายวัน</span> 📥
+            </button>
+            <button onclick="downloadExcel('inbound-monthly', true)" style="display: flex; justify-content: space-between; width: 100%; padding: 10px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; cursor: pointer;">
+                <span>📊 รายงานรับเข้า รายเดือน</span> 📥
+            </button>
+        </div>
+    </div>
+
+    <!-- 🟧 2. รายงานการเบิกจ่ายวัสดุ -->
+    <div class="report-card" data-group="withdraw" style="background: white; padding: 20px; border-radius: 8px; border-top: 4px solid #C2410C; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <h4 style="color: #C2410C; margin-top: 0; margin-bottom: 5px;">🟧 รายงานการเบิกจ่ายวัสดุ</h4>
+        <p style="font-size: 13px; color: #6B7280; margin-bottom: 15px;">ตรวจสอบสถิติการตัดจ่ายวัสดุในคลัง เพื่อใช้ในการประเมินพฤติกรรมการใช้งาน</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button onclick="downloadExcel('withdraw-dept')" style="display: flex; justify-content: space-between; width: 100%; padding: 10px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; cursor: pointer;">
+                <span>🏢 รายงานเบิกจ่าย ตามหน่วยงาน</span> 📥
+            </button>
+            <button onclick="downloadExcel('withdraw-user')" style="display: flex; justify-content: space-between; width: 100%; padding: 10px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; cursor: pointer;">
+                <span>👤 รายงานเบิกจ่าย ตามผู้เบิก</span> 📥
+            </button>
+        </div>
+    </div>
+
+    <!-- 🟩 3. รายงานยอดคงคลังและมูลค่า -->
+    <div class="report-card" data-group="stock" style="background: white; padding: 20px; border-radius: 8px; border-top: 4px solid #047857; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <h4 style="color: #047857; margin-top: 0; margin-bottom: 5px;">🟩 รายงานยอดคงคลังและมูลค่า</h4>
+        <p style="font-size: 13px; color: #6B7280; margin-bottom: 15px;">รายงานตรวจสอบพัสดุทั้งหมดที่นอนนิ่งอยู่ในสโตร์ และประเมินมูลค่าสินทรัพย์รวม</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button onclick="downloadExcel('current-stock')" style="display: flex; justify-content: space-between; width: 100%; padding: 10px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; cursor: pointer;">
+                <span>📜 ยอดพัสดุคงคลังปัจจุบัน (Current Stock)</span> 📥
+            </button>
+            <button onclick="downloadExcel('inventory-valuation')" style="display: flex; justify-content: space-between; width: 100%; padding: 10px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; cursor: pointer;">
+                <span>💰 รายงานมูลค่าคงคลัง (Valuation)</span> 📥
+            </button>
+        </div>
+    </div>
+
+    <!-- 🟥 4. รายงานแจ้งเตือนความเสี่ยง -->
+    <div class="report-card" data-group="stock" style="background: white; padding: 20px; border-radius: 8px; border-top: 4px solid #DC2626; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <h4 style="color: #DC2626; margin-top: 0; margin-bottom: 5px;">🟥 รายงานแจ้งเตือนความเสี่ยง</h4>
+        <p style="font-size: 13px; color: #6B7280; margin-bottom: 15px;">ระบบตรวจสอบอัจฉริยะสำหรับวัสดุที่ต้องสั่งซื้อเพิ่ม หรือพัสดุเสี่ยงขาดแคลน</p>
+        <button onclick="downloadExcel('low-stock')" style="display: flex; justify-content: space-between; width: 100%; padding: 10px; background: #FEF2F2; border: 1px solid #FEE2E2; border-radius: 6px; cursor: pointer; color: #DC2626; font-weight: 500;">
+            <span>🚨 รายงานวัสดุใกล้หมด (Low Stock)</span> 📥
+        </button>
+    </div>
+
+    <!-- 🔮 5. [เพิ่มใหม่] โมดูลคาดการณ์การจัดซื้อด้วย AI -->
+    <div class="report-card" data-group="ai" style="background: #FFFBEB; padding: 20px; border-radius: 8px; border-top: 4px solid #D97706; box-shadow: 0 1px 3px rgba(0,0,0,0.05); grid-column: span 1;">
+        <h4 style="color: #B45309; margin-top: 0; margin-bottom: 5px;">🔮 AI ประมวลผลและวางแผนจัดซื้อผูกอัตราเงินเฟ้อ</h4>
+        <p style="font-size: 13px; color: #78350F; margin-bottom: 15px;">วิเคราะห์ความเร็วย้อนหลัง 3 ปี เพื่อประเมิน Safety Stock, ROP และงบประมาณปีถัดไป</p>
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+            <span style="font-size: 13px; font-weight: bold; color: #4B5563;">เงินเฟ้อคาดการณ์:</span>
+            <input type="number" id="inflationRateInput" value="3.5" step="0.1" style="width: 80px; padding: 6px; border: 1px solid #D1D5DB; border-radius: 4px;"> <span style="font-size: 13px;">%</span>
+        </div>
+        <button onclick="downloadAIPlan()" style="display: flex; justify-content: space-between; width: 100%; padding: 12px; background: #065F46; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold;">
+            <span>⚡ ดาวน์โหลดแผนจัดซื้อประจำปีอัจฉริยะ (.xlsx)</span> 📥
+        </button>
+    </div>
+</div>
+
+<!-- 📋 6. รายงานบันทึกประวัติการใช้งานระบบ (Audit Trail) -->
+<div class="report-card" data-group="audit" style="background: white; padding: 20px; border-radius: 8px; border-top: 4px solid #334155; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-top: 20px;">
+    <h4 style="color: #334155; margin-top: 0; margin-bottom: 5px;">📋 รายงานบันทึกประวัติการใช้งานระบบ (Audit Trail)</h4>
+    <p style="font-size: 13px; color: #6B7280; margin-bottom: 15px;">บันทึกข้อมูลแบบละเอียดเพื่อความโปร่งใส: ใคร ทำธุรกรรมอะไร บนโมดูลไหน อย่างละเอียด</p>
+    <button onclick="downloadExcel('audit-trail')" style="width: 100%; padding: 12px; background: #1E293B; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 10px;">
+        🛡️ ส่งออกประวัติบันทึกในระบบ (Audit Trail Log)
+    </button>
+</div>
+
+<!-- ========================================================================= -->
+<!-- ⚙️ JavaScript Engine ควบคุมระบบดาวน์โหลดและตัวกรอง -->
+<!-- ========================================================================= -->
+<script>
+const BACKEND_URL = 'http://localhost:3000/api/reports';
+
+// ฟังก์ชันดึงพารามิเตอร์วันที่จากอินพุตหน้าจอ
+function getDateParameters() {
+    const start = document.getElementById('mainStartDate').value;
+    const end = document.getElementById('mainEndDate').value;
+    let params = [];
+    if (start) params.push(`startDate=${start}`);
+    if (end) params.push(`endDate=${end}`);
+    return params.length ? `?${params.join('&')}` : '';
+}
+
+// ฟังก์ชันสั่งดาวน์โหลดรายงานทั่วไป (ข้อ 1 - 8)
+function downloadExcel(endpoint, includeDate = false) {
+    const queryString = includeDate ? getDateParameters() : '';
+    window.location.href = `${BACKEND_URL}/${endpoint}${queryString}`;
+}
+
+// ฟังก์ชันประมวลผลระบบ AI คาดการณ์จัดซื้อ (ข้อ 9)
+function downloadAIPlan() {
+    const inflationPercent = document.getElementById('inflationRateInput').value || 3.5;
+    const inflationDecimal = parseFloat(inflationPercent) / 100; // แปลง 3.5% -> 0.035
+    window.location.href = `${BACKEND_URL}/procurement-planning?inflation=${inflationDecimal}`;
+}
+
+// ฟังก์ชันสลับกลุ่มรายงาน (Tab Filtering) แบบในรูปหน้าจอจริงของคุณ
+function filterReportGroup(groupName) {
+    // ปรับสไตล์ปุ่มที่กำลัง active
+    document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.background = '';
+        btn.style.color = '';
+    });
+    
+    // ซ่อน/แสดงการ์ดตามกลุ่ม
+    document.querySelectorAll('.report-card').forEach(card => {
+        if (groupName === 'all' || card.getAttribute('data-group') === groupName) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+</script>
+
+<style>
+/* ตกแต่งปุ่มแท็บเบื้องต้น */
+.nav-tab {
+    background: transparent;
+    color: #4B5563;
+    transition: all 0.2s;
+}
+.nav-tab.active {
+    background: #ffffff;
+    color: #111827;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.report-card button:hover {
+    filter: brightness(0.95);
+}
+</style>
