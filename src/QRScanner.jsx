@@ -20,7 +20,7 @@ const QRScanner = () => {
   const fetchMaterials = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:3000/api/materials');
+      const response = await fetch('https://sipms-backend.onrender.com/api/materials');
       if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลได้');
       const data = await response.json();
       setMaterials(data);

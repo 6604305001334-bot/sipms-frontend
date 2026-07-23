@@ -26,7 +26,7 @@ export default function AuditLog() {
     const fetchLogs = async () => {
         setLoading(true);
         try {
-            const res = await axios.get('http://localhost:3000/api/logs');
+            const res = await axios.get('https://sipms-backend.onrender.com/api/logs');
             setLogs(res.data);
         } catch (err) {
             console.error('ไม่สามารถโหลดประวัติการใช้งานได้:', err);

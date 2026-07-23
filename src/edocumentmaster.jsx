@@ -14,7 +14,7 @@ export default function EDocumentMaster() {
     // 🔄 โหลดรายการพัสดุทั้งหมด
     const loadMaterials = async () => {
         try {
-            const res = await axios.get('http://localhost:3000/api/materials');
+            const res = await axios.get('https://sipms-backend.onrender.com/api/materials');
             setMaterials(res.data);
             // ถ้ามีพัสดุที่เลือกอยู่แล้ว ให้อัปเดตข้อมูลพัสดุชิ้นนั้นด้วย
             if (selectedMaterial) {
@@ -53,7 +53,7 @@ export default function EDocumentMaster() {
             formData.append('documentType', uploadingDocType);
             formData.append('file', fileToUpload);
 
-            const response = await axios.post('http://localhost:3000/api/edocument/upload', formData, {
+            const response = await axios.post('https://sipms-backend.onrender.com/api/edocument/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
@@ -69,7 +69,7 @@ export default function EDocumentMaster() {
                         tax: 'ใบกำกับภาษี',
                         image: 'รูปภาพพัสดุ'
                     };
-                    await axios.post('http://localhost:3000/api/logs', {
+                    await axios.post('https://sipms-backend.onrender.com/api/logs', {
                         user: uploaderName,
                         action: 'add',
                         module: 'ระบบเอกสารอิเล็กทรอนิกส์ (e-Document)',
@@ -99,7 +99,7 @@ export default function EDocumentMaster() {
             return <span className="text-slate-300 text-xs">-</span>;
         }
         // กำหนด URL ของไฟล์ (ปรับเป็น Path ตามที่เซิร์ฟเวอร์หลังบ้านให้บริการ เช่น /uploads/)
-        const fileUrl = filePath.startsWith('http') ? filePath : `http://localhost:3000/uploads/${filePath}`;
+        const fileUrl = filePath.startsWith('http') ? filePath : `https://sipms-backend.onrender.com/uploads/${filePath}`;
         
         return (
             <a

@@ -11,7 +11,7 @@ export default function ReportsPage() {
   const [inflationRate, setInflationRate] = useState(3.5); // สัดส่วนเงินเฟ้อสำหรับ AI
 
   // URL หลักของเซิร์ฟเวอร์หลังบ้าน (Node.js API)
-  const BACKEND_URL = 'http://localhost:3000/api/reports';
+  const BACKEND_URL = 'https://sipms-backend.onrender.com/api/reports';
 
   // ==========================================
   // [⚡ FUNCTIONS] ระบบจัดการคำสั่งดาวน์โหลด Excel

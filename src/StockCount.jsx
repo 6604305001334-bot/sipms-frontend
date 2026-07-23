@@ -21,7 +21,7 @@ export default function StockCount() {
     const fetchSystemStock = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get('http://localhost:3000/api/stock-count/prepare');
+            const response = await axios.get('https://sipms-backend.onrender.com/api/stock-count/prepare');
             // นำข้อมูลจริงจากตาราง db_materials มาเซ็ตลงตาราง โดยเริ่มแรกให้ตั้งค่าคงเหลือจริง (physical_qty) เท่ากับยอดระบบก่อน
             const mappedData = response.data.map(item => ({
                 material_id: item.material_id,

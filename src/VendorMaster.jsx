@@ -21,7 +21,7 @@ const VendorMaster = () => {
   // ฟังก์ชันดึงข้อมูลจากหลังบ้าน
   const fetchVendors = async () => {
     try {
-      const response = await fetch('http://localhost:3000/vendors');
+      const response = await fetch('https://sipms-backend.onrender.com/vendors');
       const data = await response.json();
       setVendors(data);
     } catch (error) {
@@ -79,7 +79,7 @@ const VendorMaster = () => {
 
     try {
       if (modalMode === 'add') {
-        const response = await fetch('http://localhost:3000/vendors', {
+        const response = await fetch('https://sipms-backend.onrender.com/vendors', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -93,7 +93,7 @@ const VendorMaster = () => {
           alert(`เกิดข้อผิดพลาด: ${result.error}`);
         }
       } else {
-        const response = await fetch(`http://localhost:3000/vendors/${formData.id}`, {
+        const response = await fetch(`https://sipms-backend.onrender.com/vendors/${formData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -115,7 +115,7 @@ const VendorMaster = () => {
   const handleDelete = async (id) => {
     if (window.confirm('คุณต้องการลบผู้จัดจำหน่ายนี้ใช่หรือไม่?')) {
       try {
-        const response = await fetch(`http://localhost:3000/vendors/${id}`, {
+        const response = await fetch(`https://sipms-backend.onrender.com/vendors/${id}`, {
           method: 'DELETE'
         });
         if (response.ok) {

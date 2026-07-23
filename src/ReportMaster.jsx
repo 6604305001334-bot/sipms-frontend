@@ -13,7 +13,7 @@ const ReportMaster = () => {
 
   // 1. ดึงรายชื่อหน่วยงานมาใส่ใน Dropdown ตัวกรอง
   useEffect(() => {
-    fetch('http://localhost:3000/departments/main')
+    fetch('https://sipms-backend.onrender.com/departments/main')
       .then(res => res.json())
       .then(data => setMainDepartments(data))
       .catch(err => console.error('Error fetching departments:', err));

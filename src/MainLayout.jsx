@@ -35,6 +35,9 @@ import QRScanner from './QRScanner';
 import AuditLog from './AuditLog'; 
 import Login from './Login';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API
+const API_BASE_URL = 'https://sipms-backend.onrender.com';
+
 const MainLayout = () => {
   const [user, setUser] = useState(null);
   const [activeMenu, setActiveMenu] = useState('');
@@ -71,7 +74,8 @@ const MainLayout = () => {
     if (window.confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
       try {
         if (user) {
-          await axios.post('http://localhost:3000/api/logs', {
+          // ✅ เปลี่ยน URL เป็น Render API backend
+          await axios.post(`${API_BASE_URL}/api/logs`, {
             user: `${user.username} (${user.role || 'ผู้ใช้งาน'})`,
             action: 'logout',
             module: 'ระบบเข้าสู่ระบบ (Authentication)',

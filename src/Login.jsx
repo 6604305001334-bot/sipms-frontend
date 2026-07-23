@@ -28,7 +28,7 @@ export default function Login({ onLoginSuccess }) {
 
         try {
             // ยิงไปเช็กรหัสผ่านจริงกับ Database หลังบ้าน
-            const response = await axios.post('http://localhost:3000/api/login', { username, password });
+            const response = await axios.post('https://sipms-backend.onrender.com', { username, password });
             
             if (response.data.success) {
                 const userData = response.data.user;

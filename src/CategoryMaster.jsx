@@ -19,7 +19,7 @@ const CategoryMaster = () => {
   // 1. ฟังก์ชันดึงข้อมูลหมวดหมู่จากหลังบ้าน
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:3000/categories');
+      const response = await fetch('https://sipms-backend.onrender.com/categories');
       if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้');
       const data = await response.json();
       setCategories(data);
@@ -69,7 +69,7 @@ const CategoryMaster = () => {
     try {
       if (modalMode === 'add') {
         // ✨ โหมดเพิ่มข้อมูลหมวดหมู่ใหม่ (POST)
-        const response = await fetch('http://localhost:3000/categories', {
+        const response = await fetch('https://sipms-backend.onrender.com/categories', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -84,7 +84,7 @@ const CategoryMaster = () => {
         }
       } else {
         // 🛠️ โหมดแก้ไขข้อมูลหมวดหมู่เดิม (PUT)
-        const response = await fetch(`http://localhost:3000/categories/${formData.id}`, {
+        const response = await fetch(`https://sipms-backend.onrender.com/categories/${formData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -107,7 +107,7 @@ const CategoryMaster = () => {
   const handleDelete = async (id) => {
     if (window.confirm('คุณต้องการลบหมวดหมู่วัสดุนี้ใช่หรือไม่? (พัสดุที่ผูกกับหมวดหมู่นี้อาจได้รับผลกระทบ)')) {
       try {
-        const response = await fetch(`http://localhost:3000/categories/${id}`, {
+        const response = await fetch(`https://sipms-backend.onrender.com/categories/${id}`, {
           method: 'DELETE'
         });
         if (response.ok) {

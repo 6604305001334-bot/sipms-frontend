@@ -43,7 +43,7 @@ export default function Withdraw() {
     // 📥 ฟังก์ชันโหลดข้อมูลใบเบิกทั้งหมดจากฐานข้อมูล
     const loadWithdrawRequests = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/withdraw');
+            const response = await axios.get('https://sipms-backend.onrender.com/api/withdraw');
             if (response.data) {
                 setWithdrawList(response.data);
             }
@@ -55,7 +55,7 @@ export default function Withdraw() {
     // โหลดข้อมูลวัสดุพัสดุในคลังมารอให้เลือกเบิก
     const loadMaterials = async () => {
         try {
-            const matRes = await axios.get('http://localhost:3000/api/stock-in/materials');
+            const matRes = await axios.get('https://sipms-backend.onrender.com/api/stock-in/materials');
             setMaterials(matRes.data);
         } catch (err) {
             console.error('โหลดข้อมูลวัสดุล้มเหลว:', err);
@@ -65,10 +65,10 @@ export default function Withdraw() {
     // โหลดข้อมูลโครงสร้างหน่วยงาน
     const loadDepartmentsData = async () => {
         try {
-            const mainRes = await axios.get('http://localhost:3000/api/departments/main');
+            const mainRes = await axios.get('https://sipms-backend.onrender.com/api/departments/main');
             setMainDepartments(mainRes.data);
 
-            const subRes = await axios.get('http://localhost:3000/api/departments/sub-all');
+            const subRes = await axios.get('https://sipms-backend.onrender.com/api/departments/sub-all');
             setSubDepartments(subRes.data);
         } catch (err) {
             console.error('โหลดข้อมูลหน่วยงานล้มเหลว:', err);
@@ -104,7 +104,7 @@ export default function Withdraw() {
         try {
             const { main_department_id, ...postData } = formData; 
 
-            const response = await axios.post('http://localhost:3000/api/withdraw/request', {
+            const response = await axios.post('https://sipms-backend.onrender.com/api/withdraw/request', {
                 ...postData,
                 items,
                 status: 'Pending'
@@ -114,7 +114,7 @@ export default function Withdraw() {
                 
                 // บันทึก Audit Log
                 try {
-                    await axios.post('http://localhost:3000/api/logs', {
+                    await axios.post('https://sipms-backend.onrender.com/api/logs', {
                         user: `${formData.user_id} (${roleText})`,
                         action: 'add',
                         module: 'ระบบเบิกจ่าย (Withdraw)',
@@ -145,7 +145,7 @@ export default function Withdraw() {
     // 👔 ฟังก์ชันอัปเดตสถานะบิลเบิก
     const handleUpdateStatus = async (withdrawId, newStatus) => {
         try {
-            const response = await axios.put(`http://localhost:3000/api/withdraw/status/${withdrawId}`, { status: newStatus });
+            const response = await axios.put(`https://sipms-backend.onrender.com/api/withdraw/status/${withdrawId}`, { status: newStatus });
             if (response.data.success) {
                 alert(`อัปเดตสถานะใบเบิกเป็น ${newStatus} สำเร็จ`);
                 
@@ -165,7 +165,7 @@ export default function Withdraw() {
                         detailsMsg = `ยืนยันการจัดจ่ายและตัดสต๊อกพัสดุ เลขที่: ${withdrawId}`;
                     }
 
-                    await axios.post('http://localhost:3000/api/logs', {
+                    await axios.post('https://sipms-backend.onrender.com/api/logs', {
                         user: `${user?.username || 'ผู้ใช้งาน'} (${roleText})`,
                         action: actionType,
                         module: 'ระบบเบิกจ่าย (Withdraw)',

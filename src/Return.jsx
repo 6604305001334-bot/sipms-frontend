@@ -19,7 +19,7 @@ export default function Return() {
 
     // โหลดรายชื่อพัสดุทั้งหมด
     const fetchMaterials = () => {
-        axios.get('http://localhost:3000/api/materials')
+        axios.get('https://sipms-backend.onrender.com/api/materials')
             .then(res => setMaterials(res.data))
             .catch(err => console.error('โหลดข้อมูลพัสดุไม่สำเร็จ:', err));
     };

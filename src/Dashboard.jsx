@@ -29,7 +29,7 @@ export default function Dashboard() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/api/dashboard/summary?timeframe=${timeframe}`);
+      const res = await axios.get(`https://sipms-backend.onrender.com/api/dashboard/summary?timeframe=${timeframe}`);
       if (res.data.success) {
         let backendChartData = res.data.chartData || [];
 

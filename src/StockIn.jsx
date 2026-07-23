@@ -19,15 +19,15 @@ export default function StockIn() {
     const [expiredAlerts, setExpiredAlerts] = useState([]); 
 
     const loadAllData = () => {
-        axios.get('http://localhost:3000/api/stock-in/vendors')
+        axios.get('https://sipms-backend.onrender.com/api/stock-in/vendors')
             .then(res => setVendors(res.data))
             .catch(err => console.error('ไม่สามารถโหลดรายชื่อผู้จัดจำหน่าย:', err));
 
-        axios.get('http://localhost:3000/api/stock-in/materials')
+        axios.get('https://sipms-backend.onrender.com/api/stock-in/materials')
             .then(res => setMaterials(res.data))
             .catch(err => console.error('ไม่สามารถโหลดข้อมูลพัสดุ:', err));
 
-        axios.get('http://localhost:3000/api/stock-in/expired-alerts')
+        axios.get('https://sipms-backend.onrender.com/api/stock-in/expired-alerts')
             .then(res => setExpiredAlerts(res.data))
             .catch(err => console.error('ไม่สามารถโหลดข้อมูลแจ้งเตือนหมดอายุ:', err));
     };
@@ -99,7 +99,7 @@ export default function StockIn() {
                 unit_cost: item.unit_cost === '' ? 0 : Number(item.unit_cost)
             }));
 
-            const response = await axios.post('http://localhost:3000/api/stock-in/stock-in', {
+            const response = await axios.post('https://sipms-backend.onrender.com/api/stock-in/stock-in', {
                 ...header,
                 items: submissionItems
             });
@@ -109,7 +109,7 @@ export default function StockIn() {
                 
                 // 🌟 [เพิ่มใหม่] แอบยิง API ไปบันทึกประวัติการใช้งาน (Audit Log) แบบอัตโนมัติ
                 try {
-                    await axios.post('http://localhost:3000/api/logs', {
+                    await axios.post('https://sipms-backend.onrender.com/api/logs', {
                         user: 'พี่ด้า (Admin)', 
                         action: 'add',
                         module: 'บันทึกรับพัสดุ',
