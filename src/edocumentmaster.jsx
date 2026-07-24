@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Search, FileText, Upload, CheckCircle2, AlertCircle, FileUp, Paperclip, ExternalLink } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function EDocumentMaster() {
     const [materials, setMaterials] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -14,7 +17,8 @@ export default function EDocumentMaster() {
     // 🔄 โหลดรายการพัสดุทั้งหมด
     const loadMaterials = async () => {
         try {
-            const res = await axios.get('https://sipms-backend.onrender.com/api/materials');
+            // 🔄 ดึงข้อมูลพัสดุผ่าน API_BASE_URL
+            const res = await axios.get(`${API_BASE_URL}/api/materials`);
             setMaterials(res.data);
             // ถ้ามีพัสดุที่เลือกอยู่แล้ว ให้อัปเดตข้อมูลพัสดุชิ้นนั้นด้วย
             if (selectedMaterial) {
@@ -53,7 +57,8 @@ export default function EDocumentMaster() {
             formData.append('documentType', uploadingDocType);
             formData.append('file', fileToUpload);
 
-            const response = await axios.post('https://sipms-backend.onrender.com/api/edocument/upload', formData, {
+            // 🔄 อัปโหลดไฟล์ผ่าน API_BASE_URL
+            const response = await axios.post(`${API_BASE_URL}/api/edocument/upload`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
@@ -69,7 +74,9 @@ export default function EDocumentMaster() {
                         tax: 'ใบกำกับภาษี',
                         image: 'รูปภาพพัสดุ'
                     };
-                    await axios.post('https://sipms-backend.onrender.com/api/logs', {
+                    
+                    // 🔄 บันทึก Log ผ่าน API_BASE_URL
+                    await axios.post(`${API_BASE_URL}/api/logs`, {
                         user: uploaderName,
                         action: 'add',
                         module: 'ระบบเอกสารอิเล็กทรอนิกส์ (e-Document)',
@@ -98,8 +105,8 @@ export default function EDocumentMaster() {
         if (!filePath) {
             return <span className="text-slate-300 text-xs">-</span>;
         }
-        // กำหนด URL ของไฟล์ (ปรับเป็น Path ตามที่เซิร์ฟเวอร์หลังบ้านให้บริการ เช่น /uploads/)
-        const fileUrl = filePath.startsWith('http') ? filePath : `https://sipms-backend.onrender.com/uploads/${filePath}`;
+        // 🔄 กำหนด URL ของไฟล์ด้วย API_BASE_URL
+        const fileUrl = filePath.startsWith('http') ? filePath : `${API_BASE_URL}/uploads/${filePath}`;
         
         return (
             <a

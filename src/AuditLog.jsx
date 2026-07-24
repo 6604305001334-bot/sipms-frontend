@@ -17,6 +17,9 @@ import {
     Info 
 } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function AuditLog() {
     const [logs, setLogs] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -26,7 +29,8 @@ export default function AuditLog() {
     const fetchLogs = async () => {
         setLoading(true);
         try {
-            const res = await axios.get('https://sipms-backend.onrender.com/api/logs');
+            // 🔄 ใช้ API_BASE_URL ที่ปรับแต่งแล้ว
+            const res = await axios.get(`${API_BASE_URL}/api/logs`);
             setLogs(res.data);
         } catch (err) {
             console.error('ไม่สามารถโหลดประวัติการใช้งานได้:', err);

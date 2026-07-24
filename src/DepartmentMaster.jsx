@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit, Trash2, Network, X } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const DepartmentMaster = () => {
   // ระบบข้อมูลรับค่าจริงจาก API 
   const [mainDepartments, setMainDepartments] = useState([]); // ฝ่ายหลัก
@@ -24,13 +27,13 @@ const DepartmentMaster = () => {
   // ฟังก์ชันดึงข้อมูลฝ่ายหลักและหน่วยงานย่อย
   const fetchDepartmentData = async () => {
     try {
-      // ดึงฝ่ายหลัก (parent_id IS NULL)
-      const resMain = await fetch('https://sipms-backend.onrender.com/departments/main');
+      // 🔄 ดึงฝ่ายหลัก (parent_id IS NULL) ผ่าน API_BASE_URL
+      const resMain = await fetch(`${API_BASE_URL}/departments/main`);
       const dataMain = await resMain.json();
       setMainDepartments(dataMain);
 
-      // ดึงหน่วยงานย่อยทั้งหมด
-      const resSub = await fetch('https://sipms-backend.onrender.com/departments/sub-all');
+      // 🔄 ดึงหน่วยงานย่อยทั้งหมด ผ่าน API_BASE_URL
+      const resSub = await fetch(`${API_BASE_URL}/departments/sub-all`);
       const dataSub = await resSub.json();
       setSubDepartments(dataSub);
     } catch (error) {
@@ -108,7 +111,8 @@ const DepartmentMaster = () => {
 
     try {
       if (modalMode === 'add') {
-        const response = await fetch('https://sipms-backend.onrender.com/departments', {
+        // 🔄 ส่งข้อมูลสร้างใหม่ ผ่าน API_BASE_URL
+        const response = await fetch(`${API_BASE_URL}/departments`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -122,7 +126,8 @@ const DepartmentMaster = () => {
           alert(`เกิดข้อผิดพลาด: ${result.error}`);
         }
       } else {
-        const response = await fetch(`https://sipms-backend.onrender.com/departments/${formData.id}`, {
+        // 🔄 แก้ไขข้อมูล ผ่าน API_BASE_URL
+        const response = await fetch(`${API_BASE_URL}/departments/${formData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -144,7 +149,8 @@ const DepartmentMaster = () => {
   const handleDelete = async (id) => {
     if (window.confirm('คุณต้องการลบโครงสร้างหน่วยงานนี้ใช่หรือไม่? หากเป็นฝ่ายหลัก งานย่อยที่สังกัดจะถูกกระทบ')) {
       try {
-        const response = await fetch(`https://sipms-backend.onrender.com/departments/${id}`, {
+        // 🔄 ลบข้อมูล ผ่าน API_BASE_URL
+        const response = await fetch(`${API_BASE_URL}/departments/${id}`, {
           method: 'DELETE'
         });
         if (response.ok) {

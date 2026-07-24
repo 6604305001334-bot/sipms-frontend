@@ -36,7 +36,8 @@ import AuditLog from './AuditLog';
 import Login from './Login';
 
 // 🎯 ตั้งค่า URL สำหรับ Backend API
-const API_BASE_URL = 'https://sipms-backend.onrender.com';
+// 🎯 ตั้งค่า URL สำหรับ Backend API
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const MainLayout = () => {
   const [user, setUser] = useState(null);

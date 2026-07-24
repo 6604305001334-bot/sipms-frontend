@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Plus, Trash2, Save, AlertTriangle, Calendar } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function StockIn() {
     const [header, setHeader] = useState({
         po_number: '',
@@ -19,15 +22,15 @@ export default function StockIn() {
     const [expiredAlerts, setExpiredAlerts] = useState([]); 
 
     const loadAllData = () => {
-        axios.get('https://sipms-backend.onrender.com/api/stock-in/vendors')
+        axios.get(`${API_BASE_URL}/api/stock-in/vendors`)
             .then(res => setVendors(res.data))
             .catch(err => console.error('ไม่สามารถโหลดรายชื่อผู้จัดจำหน่าย:', err));
 
-        axios.get('https://sipms-backend.onrender.com/api/stock-in/materials')
+        axios.get(`${API_BASE_URL}/api/stock-in/materials`)
             .then(res => setMaterials(res.data))
             .catch(err => console.error('ไม่สามารถโหลดข้อมูลพัสดุ:', err));
 
-        axios.get('https://sipms-backend.onrender.com/api/stock-in/expired-alerts')
+        axios.get(`${API_BASE_URL}/api/stock-in/expired-alerts`)
             .then(res => setExpiredAlerts(res.data))
             .catch(err => console.error('ไม่สามารถโหลดข้อมูลแจ้งเตือนหมดอายุ:', err));
     };
@@ -99,7 +102,7 @@ export default function StockIn() {
                 unit_cost: item.unit_cost === '' ? 0 : Number(item.unit_cost)
             }));
 
-            const response = await axios.post('https://sipms-backend.onrender.com/api/stock-in/stock-in', {
+            const response = await axios.post(`${API_BASE_URL}/api/stock-in/stock-in`, {
                 ...header,
                 items: submissionItems
             });
@@ -107,9 +110,9 @@ export default function StockIn() {
             if (response.data.success) {
                 alert(`🎉 บันทึกข้อมูลเข้าฐานข้อมูลสำเร็จ!\nเลขที่เอกสาร: ${response.data.stock_in_id}`);
                 
-                // 🌟 [เพิ่มใหม่] แอบยิง API ไปบันทึกประวัติการใช้งาน (Audit Log) แบบอัตโนมัติ
+                // 🌟 บันทึกประวัติการใช้งาน (Audit Log) ผ่าน API_BASE_URL
                 try {
-                    await axios.post('https://sipms-backend.onrender.com/api/logs', {
+                    await axios.post(`${API_BASE_URL}/api/logs`, {
                         user: 'พี่ด้า (Admin)', 
                         action: 'add',
                         module: 'บันทึกรับพัสดุ',
@@ -119,7 +122,6 @@ export default function StockIn() {
                 } catch (logError) {
                     console.error('⚠️ ไม่สามารถบันทึกประวัติการใช้งานลง Audit Log ได้:', logError);
                 }
-                // 🌟 สิ้นสุดส่วนที่เพิ่มใหม่
 
                 setItems([{ material_id: '', quantity: '', unit_cost: '', lot_no: '', expiry_date: '' }]);
                 setHeader({

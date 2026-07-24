@@ -6,6 +6,9 @@ import {
 } from 'recharts';
 import { Package, DollarSign, AlertTriangle, XOctagon, Layers, RefreshCw, Loader2 } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#14b8a6', '#f43f5e', '#64748b'];
 const MONTHS_TH = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
 
@@ -29,7 +32,8 @@ export default function Dashboard() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`https://sipms-backend.onrender.com/api/dashboard/summary?timeframe=${timeframe}`);
+      // 🔄 ใช้ API_BASE_URL สำหรับสรุปข้อมูล Dashboard
+      const res = await axios.get(`${API_BASE_URL}/api/dashboard/summary?timeframe=${timeframe}`);
       if (res.data.success) {
         let backendChartData = res.data.chartData || [];
 
@@ -79,7 +83,8 @@ export default function Dashboard() {
 
     try {
       setIsLoading(true);
-      const response = await axios.post('http://localhost:3000/api/edocument/upload', {
+      // 🔄 เปลี่ยนจาก localhost:3000 มาใช้ API_BASE_URL
+      const response = await axios.post(`${API_BASE_URL}/api/edocument/upload`, {
         productId: currentId,
         documentType: 'po',
         fileName: `PO-AUTO-${currentId}-${new Date().getFullYear()}.pdf`

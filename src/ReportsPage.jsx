@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function ReportsPage() {
   // ==========================================
@@ -7,34 +10,43 @@ export default function ReportsPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedDept, setSelectedDept] = useState('all');
+  const [mainDepartments, setMainDepartments] = useState([]);
   const [activeTab, setActiveTab] = useState('all');
   const [inflationRate, setInflationRate] = useState(3.5); // สัดส่วนเงินเฟ้อสำหรับ AI
 
-  // URL หลักของเซิร์ฟเวอร์หลังบ้าน (Node.js API)
-  const BACKEND_URL = 'https://sipms-backend.onrender.com/api/reports';
+  // 🔄 ดึงข้อมูลหน่วยงานจาก Backend
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/departments/main`)
+      .then((res) => res.json())
+      .then((data) => setMainDepartments(data))
+      .catch((err) => console.error('Error fetching departments:', err));
+  }, []);
 
   // ==========================================
   // [⚡ FUNCTIONS] ระบบจัดการคำสั่งดาวน์โหลด Excel
   // ==========================================
   
-  // 1. ฟังก์ชันดาวน์โหลดรายงานทั่วไป (ผูกช่วงวันที่อัตโนมัติ)
+  // 1. ฟังก์ชันดาวน์โหลดรายงานทั่วไป (ผูกช่วงวันที่และหน่วยงานอัตโนมัติ)
   const downloadExcel = (endpoint, includeDate = false) => {
-    let queryString = '';
+    let params = [];
     if (includeDate) {
-      let params = [];
       if (startDate) params.push(`startDate=${startDate}`);
       if (endDate) params.push(`endDate=${endDate}`);
-      if (params.length) queryString = `?${params.join('&')}`;
     }
+    if (selectedDept && selectedDept !== 'all') {
+      params.push(`deptId=${selectedDept}`);
+    }
+
+    const queryString = params.length ? `?${params.join('&')}` : '';
     
-    // ยิงลิงก์ตรงเพื่อให้ Browser ทำการดาวน์โหลดไฟล์ทันที
-    window.location.href = `${BACKEND_URL}/${endpoint}${queryString}`;
+    // ยิงลิงก์ตรงผ่าน API_BASE_URL เพื่อให้ Browser ทำการดาวน์โหลดไฟล์ทันที
+    window.location.href = `${API_BASE_URL}/api/reports/${endpoint}${queryString}`;
   };
 
   // 2. ฟังก์ชันดาวน์โหลดแผนจัดซื้ออัจฉริยะประมวลผลด้วย AI
   const downloadAIPlan = () => {
     const inflationDecimal = parseFloat(inflationRate) / 100; // แปลง 3.5% เป็นทศนิยม 0.035
-    window.location.href = `${BACKEND_URL}/procurement-planning?inflation=${inflationDecimal}`;
+    window.location.href = `${API_BASE_URL}/api/reports/procurement-planning?inflation=${inflationDecimal}`;
   };
 
   // ==========================================
@@ -81,6 +93,9 @@ export default function ReportsPage() {
               style={{ padding: '8px 12px', border: '1px solid #D1D5DB', borderRadius: '6px', fontSize: '14px', minWidth: '220px' }}
             >
               <option value="all">แสดงทั้งหมดทุกหน่วยงาน</option>
+              {mainDepartments.map((dept) => (
+                <option key={dept.dept_id} value={dept.dept_id}>{dept.dept_name_th}</option>
+              ))}
             </select>
           </div>
         </div>

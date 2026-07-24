@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit, Trash2, Layers, X } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const CategoryMaster = () => {
   // เปลี่ยนจาก Mock Data เป็น State ว่าง เพื่อรอรับข้อมูลจริงจาก MySQL
   const [categories, setCategories] = useState([]);
@@ -19,7 +22,8 @@ const CategoryMaster = () => {
   // 1. ฟังก์ชันดึงข้อมูลหมวดหมู่จากหลังบ้าน
   const fetchCategories = async () => {
     try {
-      const response = await fetch('https://sipms-backend.onrender.com/categories');
+      // 🔄 ใช้ API_BASE_URL ที่ปรับแต่งแล้ว
+      const response = await fetch(`${API_BASE_URL}/categories`);
       if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้');
       const data = await response.json();
       setCategories(data);
@@ -68,8 +72,8 @@ const CategoryMaster = () => {
 
     try {
       if (modalMode === 'add') {
-        // ✨ โหมดเพิ่มข้อมูลหมวดหมู่ใหม่ (POST)
-        const response = await fetch('https://sipms-backend.onrender.com/categories', {
+        // ✨ โหมดเพิ่มข้อมูลหมวดหมู่ใหม่ (POST) - ใช้ API_BASE_URL
+        const response = await fetch(`${API_BASE_URL}/categories`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -83,8 +87,8 @@ const CategoryMaster = () => {
           alert(`เกิดข้อผิดพลาด: ${result.error}`);
         }
       } else {
-        // 🛠️ โหมดแก้ไขข้อมูลหมวดหมู่เดิม (PUT)
-        const response = await fetch(`https://sipms-backend.onrender.com/categories/${formData.id}`, {
+        // 🛠️ โหมดแก้ไขข้อมูลหมวดหมู่เดิม (PUT) - ใช้ API_BASE_URL
+        const response = await fetch(`${API_BASE_URL}/categories/${formData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -107,7 +111,8 @@ const CategoryMaster = () => {
   const handleDelete = async (id) => {
     if (window.confirm('คุณต้องการลบหมวดหมู่วัสดุนี้ใช่หรือไม่? (พัสดุที่ผูกกับหมวดหมู่นี้อาจได้รับผลกระทบ)')) {
       try {
-        const response = await fetch(`https://sipms-backend.onrender.com/categories/${id}`, {
+        // 🗑️ ใช้ API_BASE_URL ในการยิง DELETE request
+        const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
           method: 'DELETE'
         });
         if (response.ok) {

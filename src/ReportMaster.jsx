@@ -4,6 +4,9 @@ import {
   Clock, ShieldAlert, Download
 } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const ReportMaster = () => {
   const [reportType, setReportType] = useState('all'); 
   const [startDate, setStartDate] = useState('');
@@ -11,9 +14,9 @@ const ReportMaster = () => {
   const [selectedDept, setSelectedDept] = useState('all');
   const [mainDepartments, setMainDepartments] = useState([]);
 
-  // 1. ดึงรายชื่อหน่วยงานมาใส่ใน Dropdown ตัวกรอง
+  // 1. ดึงรายชื่อหน่วยงานมาใส่ใน Dropdown ตัวกรองผ่าน API_BASE_URL
   useEffect(() => {
-    fetch('https://sipms-backend.onrender.com/departments/main')
+    fetch(`${API_BASE_URL}/api/departments/main`)
       .then(res => res.json())
       .then(data => setMainDepartments(data))
       .catch(err => console.error('Error fetching departments:', err));
@@ -28,8 +31,8 @@ const ReportMaster = () => {
       deptId: selectedDept || 'all'
     }).toString();
 
-    // ยิงเปิด URL ไปยัง Backend API ตัวเจนไฟล์ Excel (เบราว์เซอร์จะดาวน์โหลดไฟล์ลงเครื่องทันที)
-    const exportUrl = `http://localhost:3000/api/reports/${reportPath}?${queryParams}`;
+    // 🔄 ยิงเปิด URL ไปยัง Backend API ตัวเจนไฟล์ Excel ผ่าน API_BASE_URL
+    const exportUrl = `${API_BASE_URL}/api/reports/${reportPath}?${queryParams}`;
     window.open(exportUrl, '_blank');
   };
 

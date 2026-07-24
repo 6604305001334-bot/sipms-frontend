@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Save, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function StockCount() {
     const [isLoading, setIsLoading] = useState(false);
     const [countData, setCountData] = useState({
@@ -13,7 +16,7 @@ export default function StockCount() {
     // 🌟 รายการพัสดุจริงที่จะดึงมาจากฐานข้อมูล
     const [countItems, setCountItems] = useState([]);
 
-    // 🔄 STEP 1: ดึงข้อมูลพัสดุและยอดคงเหลือในระบบจริงจากหลังบ้านตอนเปิดหน้าจอ
+    // 🔄 STEP 1: ดึงข้อมูลพัสดุและยอดคงเหลือในระบบจริงจากหลังบ้านตอนเปิดหน้าจอผ่าน API_BASE_URL
     useEffect(() => {
         fetchSystemStock();
     }, []);
@@ -21,7 +24,7 @@ export default function StockCount() {
     const fetchSystemStock = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get('https://sipms-backend.onrender.com/api/stock-count/prepare');
+            const response = await axios.get(`${API_BASE_URL}/api/stock-count/prepare`);
             // นำข้อมูลจริงจากตาราง db_materials มาเซ็ตลงตาราง โดยเริ่มแรกให้ตั้งค่าคงเหลือจริง (physical_qty) เท่ากับยอดระบบก่อน
             const mappedData = response.data.map(item => ({
                 material_id: item.material_id,
@@ -75,7 +78,7 @@ export default function StockCount() {
                 status: 'Completed' // ส่งสถานะไปสั่งให้หลังบ้านเขียน SQL อัปเดตยอดสต๊อกหลัก
             };
 
-            const response = await axios.post('http://localhost:3000/api/stock-count/submit', payload);
+            const response = await axios.post(`${API_BASE_URL}/api/stock-count/submit`, payload);
             
             if (response.data.success) {
                 alert('🎉 ' + response.data.message);

@@ -4,6 +4,9 @@ import {
   ClipboardCheck, X, CheckCircle, AlertCircle, ChevronLeft, Search
 } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const QRScanner = () => {
   const [viewMode, setViewMode] = useState('list'); 
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,11 +19,11 @@ const QRScanner = () => {
   const [materials, setMaterials] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 🔄 ดึงข้อมูลพัสดุจาก API
+  // 🔄 ดึงข้อมูลพัสดุจาก API ผ่าน API_BASE_URL
   const fetchMaterials = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('https://sipms-backend.onrender.com/api/materials');
+      const response = await fetch(`${API_BASE_URL}/api/materials`);
       if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลได้');
       const data = await response.json();
       setMaterials(data);
@@ -130,7 +133,6 @@ const QRScanner = () => {
                     </h3>
                     <div className="mt-3 text-[10px] text-slate-500 w-full flex justify-between border-t border-slate-100 pt-2">
                       <span>คงเหลือ</span>
-                      {/* สมมติว่ามีฟิลด์ quantity หรือ stock ใน DB, ถ้าไม่มีจะแสดง 0 ไปก่อน */}
                       <span className="font-bold text-indigo-600">{item.stock_qty || item.min_qty || 0} {item.unit || 'หน่วย'}</span>
                     </div>
                   </button>

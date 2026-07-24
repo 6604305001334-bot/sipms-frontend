@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit, Trash2, Building2, X } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const VendorMaster = () => {
   const [vendors, setVendors] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,10 +21,10 @@ const VendorMaster = () => {
     email: '' 
   });
 
-  // ฟังก์ชันดึงข้อมูลจากหลังบ้าน
+  // ฟังก์ชันดึงข้อมูลจากหลังบ้านผ่าน API_BASE_URL
   const fetchVendors = async () => {
     try {
-      const response = await fetch('https://sipms-backend.onrender.com/vendors');
+      const response = await fetch(`${API_BASE_URL}/vendors`);
       const data = await response.json();
       setVendors(data);
     } catch (error) {
@@ -79,7 +82,7 @@ const VendorMaster = () => {
 
     try {
       if (modalMode === 'add') {
-        const response = await fetch('https://sipms-backend.onrender.com/vendors', {
+        const response = await fetch(`${API_BASE_URL}/vendors`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -93,7 +96,7 @@ const VendorMaster = () => {
           alert(`เกิดข้อผิดพลาด: ${result.error}`);
         }
       } else {
-        const response = await fetch(`https://sipms-backend.onrender.com/vendors/${formData.id}`, {
+        const response = await fetch(`${API_BASE_URL}/vendors/${formData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -115,7 +118,7 @@ const VendorMaster = () => {
   const handleDelete = async (id) => {
     if (window.confirm('คุณต้องการลบผู้จัดจำหน่ายนี้ใช่หรือไม่?')) {
       try {
-        const response = await fetch(`https://sipms-backend.onrender.com/vendors/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/vendors/${id}`, {
           method: 'DELETE'
         });
         if (response.ok) {

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { RotateCcw, AlertCircle, Plus, Trash2, CheckCircle } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function Return() {
     const [role, setRole] = useState('user');
     const [activeTab, setActiveTab] = useState('create'); 
@@ -17,16 +20,16 @@ export default function Return() {
     const [materials, setMaterials] = useState([]);
     const [pendingReturns, setPendingReturns] = useState([]); // 🌟 เก็บรายการรออนุมัติจริงจากหลังบ้าน
 
-    // โหลดรายชื่อพัสดุทั้งหมด
+    // โหลดรายชื่อพัสดุทั้งหมดผ่าน API_BASE_URL
     const fetchMaterials = () => {
-        axios.get('https://sipms-backend.onrender.com/api/materials')
+        axios.get(`${API_BASE_URL}/api/materials`)
             .then(res => setMaterials(res.data))
             .catch(err => console.error('โหลดข้อมูลพัสดุไม่สำเร็จ:', err));
     };
 
-    // 🌟 โหลดรายการที่รออนุมัติจริง (Pending) จากฐานข้อมูล
+    // 🌟 โหลดรายการที่รออนุมัติจริง (Pending) จากฐานข้อมูลผ่าน API_BASE_URL
     const fetchPendingReturns = () => {
-        axios.get('http://localhost:3000/api/return/pending')
+        axios.get(`${API_BASE_URL}/api/return/pending`)
             .then(res => setPendingReturns(res.data))
             .catch(err => console.error('โหลดรายการคำขอคืนพัสดุไม่สำเร็จ:', err));
     };
@@ -58,16 +61,16 @@ export default function Return() {
             return;
         }
         try {
-            const response = await axios.post('http://localhost:3000/api/return/request', {
+            const response = await axios.post(`${API_BASE_URL}/api/return/request`, {
                 ...formData,
                 items
             });
             if (response.data.success) {
                 alert(`🎉 ส่งใบแจ้งคืนพัสดุเรียบร้อย! เลขที่ใบแจ้งคืน: ${response.data.return_id}`);
                 
-                // 🌟 [เพิ่มใหม่] 1. บันทึกประวัติ: ผู้ใช้งานส่งคำขอคืนพัสดุ
+                // 🌟 บันทึกประวัติ: ผู้ใช้งานส่งคำขอคืนพัสดุ
                 try {
-                    await axios.post('http://localhost:3000/api/logs', {
+                    await axios.post(`${API_BASE_URL}/api/logs`, {
                         user: formData.user_id, // ชื่อผู้ส่งคืน
                         action: 'return',
                         module: 'ระบบคืนพัสดุ (Return)',
@@ -90,13 +93,13 @@ export default function Return() {
     // 📥 ฟังก์ชันกดยืนยันอนุมัติรับของคืนเข้าคลังจริง (Storekeeper)
     const handleApproveReturn = async (returnId) => {
         try {
-            const response = await axios.put(`http://localhost:3000/api/return/approve/${returnId}`);
+            const response = await axios.put(`${API_BASE_URL}/api/return/approve/${returnId}`);
             if (response.data.success) {
                 alert('✅ อนุมัติรับคืนพัสดุและเพิ่มยอดเข้าสต๊อกสะสมเรียบร้อยแล้ว!');
 
-                // 🌟 [เพิ่มใหม่] 2. บันทึกประวัติ: เจ้าหน้าที่พัสดุกดอนุมัติรับของคืน
+                // 🌟 บันทึกประวัติ: เจ้าหน้าที่พัสดุกดอนุมัติรับของคืน
                 try {
-                    await axios.post('http://localhost:3000/api/logs', {
+                    await axios.post(`${API_BASE_URL}/api/logs`, {
                         user: 'เจ้าหน้าที่พัสดุ (Storekeeper)', 
                         action: 'approve',
                         module: 'ระบบคืนพัสดุ (Return)',

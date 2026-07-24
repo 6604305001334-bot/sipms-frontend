@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Edit, Trash2, Package, Upload, Image as ImageIcon } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const MaterialMaster = () => {
   const [materials, setMaterials] = useState([]);
   const [categories, setCategories] = useState([]); 
@@ -34,9 +37,9 @@ const MaterialMaster = () => {
     }
     const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
     if (!cleanPath.startsWith('/uploads/')) {
-      return `https://sipms-backend.onrender.com/uploads${cleanPath}`;
+      return `${API_BASE_URL}/uploads${cleanPath}`;
     }
-    return `https://sipms-backend.onrender.com${cleanPath}`;
+    return `${API_BASE_URL}${cleanPath}`;
   };
 
   // ฟังก์ชันล้างฟอร์มกรอกข้อมูล
@@ -61,7 +64,7 @@ const MaterialMaster = () => {
   // 1. ดึงข้อมูลวัสดุพัสดุทั้งหมด
   const fetchMaterials = async () => {
     try {
-      const response = await fetch('https://sipms-backend.onrender.com/api/materials');
+      const response = await fetch(`${API_BASE_URL}/api/materials`);
       if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลได้');
       const data = await response.json();
       setMaterials(data);
@@ -73,7 +76,7 @@ const MaterialMaster = () => {
   // 2. ดึงข้อมูลหมวดหมู่ทั้งหมด
   const fetchCategories = async () => {
     try {
-      const response = await fetch('https://sipms-backend.onrender.com/api/categories'); 
+      const response = await fetch(`${API_BASE_URL}/api/categories`); 
       if (response.ok) {
         const data = await response.json();
         setCategories(data);
@@ -86,7 +89,7 @@ const MaterialMaster = () => {
   // 3. ดึงข้อมูลผู้จัดจำหน่ายทั้งหมด
   const fetchVendors = async () => {
     try {
-      const response = await fetch('https://sipms-backend.onrender.com/api/vendors');
+      const response = await fetch(`${API_BASE_URL}/api/vendors`);
       if (response.ok) {
         const data = await response.json();
         setVendors(data);
@@ -153,7 +156,7 @@ const MaterialMaster = () => {
 
     try {
       if (isEditing) {
-        const response = await fetch(`http://localhost:3000/api/materials/${formData.id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/materials/${formData.id}`, {
           method: 'PUT',
           body: data
         });
@@ -167,7 +170,7 @@ const MaterialMaster = () => {
           alert(`❌ แก้ไขไม่สำเร็จ: ${resErr.error || resErr.message}`);
         }
       } else {
-        const response = await fetch('https://sipms-backend.onrender.com/api/materials', {
+        const response = await fetch(`${API_BASE_URL}/api/materials`, {
           method: 'POST',
           body: data
         });
@@ -220,7 +223,7 @@ const MaterialMaster = () => {
   const handleDelete = async (id) => {
     if (window.confirm('คุณต้องการลบรายการพัสดุนี้ออกจากคลังใช่หรือไม่?')) {
       try {
-        const response = await fetch(`https://sipms-backend.onrender.com/api/materials/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/materials/${id}`, {
           method: 'DELETE'
         });
         if (response.ok) {

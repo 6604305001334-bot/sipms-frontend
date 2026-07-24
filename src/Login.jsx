@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { LogIn, Lock, User, ShieldCheck, UserPlus, ArrowLeft } from 'lucide-react';
 
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function Login({ onLoginSuccess }) {
     const [isRegisterMode, setIsRegisterMode] = useState(false); // สลับโหมด Login / Register
     
@@ -27,21 +30,25 @@ export default function Login({ onLoginSuccess }) {
         setErrorMsg('');
 
         try {
-            // ยิงไปเช็กรหัสผ่านจริงกับ Database หลังบ้าน
-            const response = await axios.post('https://sipms-backend.onrender.com', { username, password });
+            // 🔄 ยิงไปเช็กรหัสผ่านจริงกับ Database หลังบ้าน ผ่าน API_BASE_URL
+            const response = await axios.post(`${API_BASE_URL}/api/login`, { username, password });
             
             if (response.data.success) {
                 const userData = response.data.user;
                 localStorage.setItem('user', JSON.stringify(userData));
 
-                // บันทึก Audit Log การ Login
-                await axios.post('http://localhost:3000/api/logs', {
-                    user: `${userData.username} (${userData.role})`,
-                    action: 'login',
-                    module: 'ระบบเข้าสู่ระบบ (Authentication)',
-                    details: `เข้าสู่ระบบสำเร็จในตำแหน่ง: ${userData.role}`,
-                    ip_address: '127.0.0.1'
-                });
+                // 🔄 บันทึก Audit Log การ Login ผ่าน API_BASE_URL
+                try {
+                    await axios.post(`${API_BASE_URL}/api/logs`, {
+                        user: `${userData.username} (${userData.role})`,
+                        action: 'login',
+                        module: 'ระบบเข้าสู่ระบบ (Authentication)',
+                        details: `เข้าสู่ระบบสำเร็จในตำแหน่ง: ${userData.role}`,
+                        ip_address: '127.0.0.1'
+                    });
+                } catch (logErr) {
+                    console.error('⚠️ ไม่สามารถบันทึก Audit Log ได้:', logErr);
+                }
 
                 setLoading(false);
                 if (onLoginSuccess) {
@@ -75,7 +82,8 @@ export default function Login({ onLoginSuccess }) {
         setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:3000/api/register', {
+            // 🔄 ยิงสมัครสมาชิกผ่าน API_BASE_URL
+            const response = await axios.post(`${API_BASE_URL}/api/register`, {
                 username,
                 password,
                 role
