@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { LogIn, Lock, User, ShieldCheck, UserPlus, ArrowLeft } from 'lucide-react';
 
-// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น (Local / Production)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// 🎯 ตั้งค่า URL สำหรับ Backend API ให้ยืดหยุ่น และตัดอักขระส่วนเกินที่อาจหลุดมาให้อัตโนมัติ
+const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = rawUrl.replace(/[\[\]\(\)]/g, '').replace(/\/+$/, '');
 
 export default function Login({ onLoginSuccess }) {
     const [isRegisterMode, setIsRegisterMode] = useState(false); // สลับโหมด Login / Register
